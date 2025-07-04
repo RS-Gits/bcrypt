@@ -45,7 +45,7 @@ jobs:
           CARGO_TARGET_DIR: ${{ format('{0}/src/_bcrypt/target/', github.workspace) }}
 
   windows:
-    runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-arm64' || 'windows-latest' }}
+    runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
     strategy:
       matrix:
         WINDOWS:
