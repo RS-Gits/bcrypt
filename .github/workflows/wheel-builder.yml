@@ -222,7 +222,7 @@ jobs:
 
   windows:
     needs: [sdist]
-    runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-arm64' || 'windows-latest' }}
+    runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
     strategy:
       fail-fast: false
       matrix:
