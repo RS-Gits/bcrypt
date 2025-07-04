@@ -44,18 +44,18 @@ jobs:
           NOXSESSION: ${{ matrix.PYTHON.NOXSESSION }}
           CARGO_TARGET_DIR: ${{ format('{0}/src/_bcrypt/target/', github.workspace) }}
 
-    windows:
-      runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
-      strategy:
-        matrix:
-          WINDOWS:
-            - {ARCH: 'x86', WINDOWS: 'win32', RUST_TRIPLE: 'i686-pc-windows-msvc'}
-            - {ARCH: 'x64', WINDOWS: 'win64', RUST_TRIPLE: 'x86_64-pc-windows-msvc'}
-            - {ARCH: 'arm64', WINDOWS: 'win-arm64', RUST_TRIPLE: 'aarch64-pc-windows-msvc'}
-          PYTHON:
-            - {VERSION: "3.8", NOXSESSION: "tests"}
-            - {VERSION: "3.13", NOXSESSION: "tests"}
-            - {VERSION: "3.13t", NOXSESSION: "tests"}
+  windows:
+    runs-on: ${{ matrix.WINDOWS.ARCH == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
+    strategy:
+      matrix:
+        WINDOWS:
+          - {ARCH: 'x86', WINDOWS: 'win32', RUST_TRIPLE: 'i686-pc-windows-msvc'}
+          - {ARCH: 'x64', WINDOWS: 'win64', RUST_TRIPLE: 'x86_64-pc-windows-msvc'}
+          - {ARCH: 'arm64', WINDOWS: 'win-arm64', RUST_TRIPLE: 'aarch64-pc-windows-msvc'}
+        PYTHON:
+          - {VERSION: "3.8", NOXSESSION: "tests"}
+          - {VERSION: "3.13", NOXSESSION: "tests"}
+          - {VERSION: "3.13t", NOXSESSION: "tests"}
         exclude:
           - WINDOWS: {ARCH: 'arm64', WINDOWS: 'win-arm64', RUST_TRIPLE: 'aarch64-pc-windows-msvc'}
             PYTHON: {VERSION: "3.8", NOXSESSION: "tests"}
@@ -79,12 +79,12 @@ jobs:
             ~/.cargo/git/db/
             src/_bcrypt/target/
           key: ${{ runner.os }}-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}-${{ steps.setup-python.outputs.python-version }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
       - run: pip install nox
       - run: nox -v
         env:
           NOXSESSION: ${{ matrix.PYTHON.NOXSESSION }}
           CARGO_TARGET_DIR: ${{ format('{0}/src/_bcrypt/target/', github.workspace) }}
+
   linux:
     runs-on: ubuntu-22.04
     strategy:
@@ -102,7 +102,6 @@ jobs:
           - {VERSION: "pypy-3.9", NOXSESSION: "tests"}
           - {VERSION: "pypy-3.10", NOXSESSION: "tests"}
           - {VERSION: "pypy-3.11", NOXSESSION: "tests"}
-
           # MSRV
           - {VERSION: "3.13", NOXSESSION: "tests", RUST_VERSION: "1.64.0"}
           - {VERSION: "3.13", NOXSESSION: "tests", RUST_VERSION: "beta"}
@@ -129,7 +128,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@b3b07ba8b418998c39fb20f53e8b695cdcc8de1b
         with:
           toolchain: ${{ matrix.PYTHON.RUST_VERSION || 'stable' }}
-
       - run: pip install nox
       - run: nox -v
         env:
@@ -193,18 +191,15 @@ jobs:
 
   all-green:  # This job does nothing and is only used for the branch protection
     if: always()
-
     needs:
-    - macos
-    - windows
-    - linux
-    - alpine
-    - linux-distros
-
+      - macos
+      - windows
+      - linux
+      - alpine
+      - linux-distros
     runs-on: ubuntu-latest
-
     steps:
-    - name: Decide whether the needed jobs succeeded or failed
-      uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe
-      with:
-        jobs: ${{ toJSON(needs) }}
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe
+        with:
+          jobs: ${{ toJSON(needs) }}
